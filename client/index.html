@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSEDemo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .information {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .send {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            flex: 0 1 auto;
+            font-weight: bold;
+        }
+
+        #questionInput {
+            flex: 1;
+            width: 100%;
+            padding: 10px;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .btn-default {
+            flex: 0 1 auto;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .btn-default:hover {
+            background-color: #0056b3;
+        }
+
+        .answer {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="information">
+            <div class="send">
+                <label for="questionInput">向AI助理提问</label>
+                <input type="text" name="question" class="form-control" id="questionInput"
+                    placeholder="请输入你想问的问题">
+                <button class="btn btn-default">提交</button>
+            </div>
+
+            <div class="answer" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const oMessage = document.querySelector("#message");
+        const btn = document.querySelector(".btn-default");
+        let currentEventSource = null; // 保存当前 EventSource 实例
+
+        btn.addEventListener('click', function (event) {
+
+            event.preventDefault();
+
+            // 如果已有流存在，先关闭它
+            if (currentEventSource) {
+                currentEventSource.close();
+            }
+
+            // 获取问题
+            const question = document.querySelector("#questionInput").value.trim();
+
+            if (question) {
+                fetch(`http://localhost:8888/ask?question=${question}`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                }).
+                    then(() => {
+                        oMessage.innerHTML += `问：${document.querySelector("#questionInput").value}<br/><hr style="border: 0.8px dashed #000;">`;
+                        document.querySelector("#questionInput").value = "";
+
+                        // 创建新的 EventSource 实例并开始接收服务器推送的消息
+                        currentEventSource = new EventSource(`http://localhost:8888/stream`);
+
+                        oMessage.innerHTML += `答：`;
+
+                        // 监听来自服务器的消息
+                        currentEventSource.onmessage = (event) => {
+                            const data = JSON.parse(event.data);
+                            // 如果有内容，显示在页面上
+                            if (data.message) {
+                                oMessage.innerHTML += `${data.message}`;
+                            } else if (data.error) {
+                                oMessage.innerHTML += `<p style="color:red;">Error: ${data.error}</p>`;
+                                currentEventSource.close();  // 出错时关闭流
+                            }
+                        }
+
+                        currentEventSource.onerror = () => {
+                            oMessage.innerHTML += `<br/><hr style="border: 1px solid #000;"/>`
+                            currentEventSource.close();
+                        };
+                    })
+                    .catch((error) => {
+                        console.log("error==>", error);
+                    });
+            }
+        });
+
+    </script>
+</body>
+
+</html>
