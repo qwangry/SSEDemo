@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            .container {
+                width: 80%;
+                margin: 0 auto;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            iframe预览实现：
+            <hr>
+            <iframe title="test" scrolling="no" src="./test.pdf" height="900px;" width="800px"></iframe>
+            <hr>
+            embed标签预览实现
+            <hr>
+            <embed src="./test.pdf" width="800px" height="900px" type="application/pdf" />
+            <hr>
+            object标签预览实现：
+            <hr>
+            <object data="./test.pdf" type="application/pdf" width="800px" height="900px">
+            </object>
+        </div>
+    </body>
+
+</html>
