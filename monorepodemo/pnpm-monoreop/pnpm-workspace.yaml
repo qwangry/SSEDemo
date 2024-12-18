@@ -1,0 +1,13 @@
+packages:
+  # packages/ 直接子目录中的所有包
+  # npm init vue@3  h5-client web-client tenant-client
+  - 'packages/*'
+  # components/ 子目录中的所有包
+  # npm init vue@3  components
+  - 'components/**'
+  # pnpm create vite   variant-ts
+  - 'apis/**'
+  # pnpm create vite   variant-ts
+  - 'utils/**'
+  # 排除测试目录中的包
+  - '!**/test/**'
