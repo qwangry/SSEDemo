@@ -23,3 +23,11 @@ npm install pdfjs-dist
 
 npm install react-pdf
 ```
+
+## monorepodemo
+
+了解monorepo管理项目
+
+## monorepedemo/pnpm-monoreop/apps/web-client
+
+[虚拟列表](https://mp.weixin.qq.com/s/unNbvl6L6vLHXcnyheI1UQ)
